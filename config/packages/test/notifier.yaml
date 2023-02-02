@@ -1,0 +1,15 @@
+framework:
+    notifier:
+        chatter_transports:
+            test: 'null://null'
+            failover_test: 'failing://failing || null://null'
+        texter_transports:
+            test: 'null://null'
+            failover_test: 'failing://failing || null://null'
+        channel_policy:
+            urgent: [ 'sms/test', 'chat/test' ]
+            high: [ 'chat/test' ]
+            medium: [ 'email' ]
+            low: [ 'email' ]
+        admin_recipients:
+            - { email: admin@example.com }

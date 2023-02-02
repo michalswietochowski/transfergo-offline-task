@@ -57,6 +57,29 @@ class NotificationServiceTest extends KernelTestCase
         $this->assertCount(2, $events);
     }
 
+    public function testNotificationChannelsSupportFailover(): void
+    {
+        $container = static::getContainer();
+
+        $notificationService = $container->get(NotificationService::class);
+        $eventDispatcher     = $container->get(EventDispatcherInterface::class);
+
+        /** @var array|SentMessageEvent[] $events */
+        $events = [];
+
+        $eventDispatcher->addListener(SentMessageEvent::class, function (SentMessageEvent $event) use (&$events) {
+            $events[] = $event;
+        });
+
+        $notification = (new Notification('Test subject', ['sms/failover_test', 'chat/failover_test']))->content('Test message');
+
+        $recipient = new Recipient('someuser@example.org', '+48600123456');
+
+        $notificationService->send($notification, $recipient);
+
+        $this->assertCount(2, $events);
+    }
+
     public function testTranslatableNotificationCanBeUsed(): void
     {
         $container = static::getContainer();

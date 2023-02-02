@@ -1,0 +1,5 @@
+services:
+  notifier.transport_factory.failing:
+    class: TransferGO\Tests\Notifier\Transport\FailingTransportFactory
+    parent: notifier.transport_factory.abstract
+    tags: ['chatter.transport_factory', 'texter.transport_factory']
