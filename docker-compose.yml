@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: php-cli.dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - PHP_IDE_CONFIG=serverName=docker
+
+  qa:
+    image: "jakzal/phpqa:1.83.6-php8.2-alpine"
+    working_dir: /project
+    volumes:
+      - .:/project
