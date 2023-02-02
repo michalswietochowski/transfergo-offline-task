@@ -57,6 +57,29 @@ class NotificationServiceTest extends KernelTestCase
         $this->assertCount(2, $events);
     }
 
+    public function testTranslatableNotificationCanBeUsed(): void
+    {
+        $container = static::getContainer();
+
+        $notificationService = $container->get(NotificationService::class);
+        $translator          = $container->get(TranslatorInterface::class);
+
+        $notification = (new TranslatableNotification($translator, 'Test subject', channels: ['email']))->content('Test message');
+
+        $polishRecipient  = new LocaleAwareRecipient('pl', 'someuser@example.org');
+        $englishRecipient = new LocaleAwareRecipient('lt', 'someotheruser@example.org');
+
+        $notificationService->send($notification, $polishRecipient, $englishRecipient);
+
+        $emails = $this->getMailerMessages();
+
+        $this->assertCount(2, $emails);
+        $this->assertEmailHeaderSame($emails[0], 'Subject', 'Testowy temat');
+        $this->assertEmailTextBodyContains($emails[0], 'Testowa wiadomość');
+        $this->assertEmailHeaderSame($emails[1], 'Subject', 'Bandymo pranešimo tema');
+        $this->assertEmailTextBodyContains($emails[1], 'Bandomasis pranešimas');
+    }
+
     public function testNotificationsAreLogged(): void
     {
         $container = static::getContainer();
